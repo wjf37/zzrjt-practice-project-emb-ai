@@ -1,16 +1,26 @@
-import requests
+'''function to analyse a string using ibm watson.
+'''
 import json
+import requests
 
-def sentiment_analyzer(text_to_analyse):  # Define a function named sentiment_analyzer that takes a string input (text_to_analyse)
-    url = 'https://sn-watson-sentiment-bert.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/SentimentPredict'  # URL of the sentiment analysis service
-    myobj = { "raw_document": { "text": text_to_analyse } }  # Create a dictionary with the text to be analyzed
-    header = {"grpc-metadata-mm-model-id": "sentiment_aggregated-bert-workflow_lang_multi_stock"}  # Set the headers required for the API request
-    response = requests.post(url, json = myobj, headers=header)  # Send a POST request to the API with the text and headers
+def sentiment_analyzer(text_to_analyse):
+    '''Function named sentiment_analyzer that takes a string input (text_to_analyse)
+    '''
+    # URL of the sentiment analysis service
+    url = ('https://sn-watson-sentiment-bert.labs.skills.network/'
+    'v1/watson.runtime.nlp.v1/NlpService/SentimentPredict')
+    # Create a dictionary with the text to be analyzed
+    myobj = { "raw_document": { "text": text_to_analyse } }
+    # Set the headers required for the API request
+    header = {"grpc-metadata-mm-model-id": "sentiment_aggregated-bert-workflow_lang_multi_stock"}
+    # Send a POST request to the API with the text and headers
+    response = requests.post(url, json = myobj, headers=header, timeout=60)
     formatted_response = json.loads(response.text)
+    label = None
+    score = None
     if response.status_code == 200:
         label = formatted_response['documentSentiment']['label']
         score = formatted_response['documentSentiment']['score']
-    elif response.status_code == 500:
-        label = None
-        score = None
-    return {'label': label, 'score': score}  # Return the response text from the API
+    print((label, score))
+    # Return the response text from the API
+    return {'label': label, 'score': score}
